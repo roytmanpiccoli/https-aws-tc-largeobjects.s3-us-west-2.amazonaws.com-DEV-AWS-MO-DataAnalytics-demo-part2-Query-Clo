@@ -1,0 +1,53 @@
+Building a Simple AWS CloudTrail Data Analytics Solution
+The next video demonstrates the steps that are listed here, This document includes the step-by-step instructions that Raf completes on the Part 2 of the demo you are about to watch. You can use this document as a reference guide, or follow up in your own AWS account, which might incur some costs and is not mandatory for completing the course.
+
+Important: If you choose to use your own account, make sure that you shut down the AWS resources you created after you finish using them, but only do so after finishing part 3.
+
+Part 2: Query CloudTrail data in Amazon Athena
+The next video demonstrates the following steps. If you prefer to read instead of following a video, you can use this document as a reference guide. This document includes the step-by-step instructions that Raf completes on the part 2 of the demo you are about to watch!
+
+Oh no! People in your organization are saying that a web server was turned off and the website is now offline. Now, you will use CloudTrail data to investigate what happened and get evidence of the action, including:
+
+Who shut down the web server
+When they shut it down
+Where they shut it down from
+You will do this investigation by creating an Athena table that points to the S3 bucket that is used by your new CloudTrail configuration.
+
+As an AWS administrator: In the AWS Management Console, open the list of all AWS services by choosing Services, and locate and choose CloudTrail.
+
+In the navigation pane, choose Event history, and then choose Create Athena table.
+
+In Storage location, choose the bucket you created as part of CloudTrail configuration. This action will update the structured query language (SQL) command that creates the table to use the corresponding bucket location.
+
+Choose Create table.
+
+You now have an Athena table with the same schema that is used by CloudTrail. The table points to the recently created S3 bucket that is used by CloudTrail.
+
+As an AWS administrator: In the AWS Management Console, open the list of all AWS services by choosing Services, and locate and choose Athena.
+
+If this is the first time you’re using Athena in this AWS account, you will need configure some settings. In the upper-right area of the window, choose Settings.
+
+Then, select another S3 bucket for the Athena query result location by choosing the Select button. A bucket might have been automatically created for this purpose, so you might only need to select a bucket with a name that starts with aws-athena-query-results.
+
+After you select the bucket, choose Save, and you are ready to do Athena queries.
+
+To get the activity history of a given EC2 instance, run the following query. Make sure to replace the instance ID with your instance ID. You also need to replace YOUR-ATHENA-TABLE-HERE with the name of your Athena table. You can copy the table name from the navigation pane. The query looks like this example:
+
+SELECT *
+FROM
+    YOUR-ATHENA-TABLE-HERE
+WHERE 
+    eventsource = 'ec2.amazonaws.com' AND 
+    requestparameters LIKE '%YOUR-INSTANCE-ID-HERE%' AND
+    responseelements != 'null';
+Copy to clipboard
+This query should reveal that the nicholas user issued an API call that shut down the web server. The following query shows you the other actions that nicholas did in the AWS account:
+
+SELECT *
+FROM
+    YOUR-ATHENA-TABLE-HERE
+WHERE
+    useragent LIKE '%console%' AND
+    useridentity.username LIKE 'nicholas';
+Copy to clipboard
+You will now learn a way to visualize this information in Amazon QuickSight. Suppose that you want a pie chart of successful requests and failed requests. SQL is better than seeing the information in a text form. Part 3 covers creating visualizations to see a pie chart of the actions made by that user.
